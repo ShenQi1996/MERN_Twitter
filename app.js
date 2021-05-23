@@ -1,11 +1,45 @@
 const express = require("express");
 const app = express();
+const mongoose = require("mongoose");
+const db = require("./confg/keys").mongoURI;
+const users = require("./routes/api/users");
+const tweets = require("./routes/api/tweets");
+const User = require("./models/User");
+const bodyParser = require("body-parser");
+const path = require("path");
 
-//dev:GI3FY6cKioxV46du@cluster0.empd4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("frontend/build"));
+  app.get("/", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+  });
+}
+
+mongoose
+  .connect(db, { useUnifiedTopology: true })
+  .then(() => console.log("Connected to mongoDB"))
+  .catch(err => console.log(err));
+
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
+
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
+  const user = new User({
+    handle: "jim",
+    email: "jim@jum.jim",
+    password: "123456789",
+  });
+  user.save();
   res.send("Hello World!");
 });
+
+app.use("/api/users", users);
+app.use("/api/tweets", tweets);
 
 const port = process.env.PORT || 5000;
 

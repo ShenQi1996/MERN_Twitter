@@ -15,10 +15,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-mongoose
-  // .connect(db, { useUnifiedTopology: true })
-  .then(() => console.log("Connected to mongoDB"))
-  .catch(err => console.log(err));
+mongoose;
 
 app.use(
   bodyParser.urlencoded({
